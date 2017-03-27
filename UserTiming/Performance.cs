@@ -24,6 +24,16 @@ namespace UserTiming
             }
         }
 
+        public override void ClearMarks()
+        {
+            lock (entriesLock)
+            {
+                entries = entries
+                    .Where(entry => entry.EntryType != PerformanceEntryType.Mark)
+                    .ToImmutableList();
+            }
+        }
+
         public override IEnumerable<IPerformanceEntry> GetEntriesByType(string entryType)
         {
             return entries.Where(entry => entry.EntryType == entryType);
