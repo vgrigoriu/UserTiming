@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 
 namespace UserTiming
 {
     public class Performance : ThrowingPerformanceBase
     {
-        private static readonly double MilisecondsPerTick = 1000.0 / Stopwatch.Frequency;
+        
 
         private ImmutableList<IPerformanceEntry> entries = ImmutableList<IPerformanceEntry>.Empty;
 
@@ -17,7 +16,7 @@ namespace UserTiming
 
         public override void Mark(string markName)
         {
-            var entry = GetCurrentMark(markName);
+            var entry = new PerformanceMark(markName);
             lock (entriesLock)
             {
                 entries = entries.Add(entry);
@@ -52,7 +51,7 @@ namespace UserTiming
 
         public override void Measure(string measureName, string startMark)
         {
-            var currentMark = GetCurrentMark(Guid.NewGuid().ToString());
+            var currentMark = new PerformanceMark(Guid.NewGuid().ToString());
             lock (entries)
             {
                 entries = entries.Add(new PerformanceMeasure(
@@ -78,12 +77,6 @@ namespace UserTiming
         public override IEnumerable<IPerformanceEntry> GetEntriesByType(string entryType)
         {
             return entries.Where(entry => entry.EntryType == entryType);
-        }
-
-        private IPerformanceEntry GetCurrentMark(string markName)
-        {
-            var miliseconds = Stopwatch.GetTimestamp() * MilisecondsPerTick;
-            return new PerformanceMark(markName, miliseconds);
         }
     }
 }
