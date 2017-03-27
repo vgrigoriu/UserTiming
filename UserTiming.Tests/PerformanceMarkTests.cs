@@ -25,5 +25,18 @@ namespace UserTiming.Tests
 
             Assert.Empty(entries);
         }
+
+        [Fact]
+        public void CanClearAddedMarksWithSpecificName()
+        {
+            var sut = new Performance();
+            sut.Mark("test");
+            sut.Mark("another-test");
+            sut.ClearMarks("test");
+            var entries = sut.GetEntriesByType(PerformanceEntryType.Mark);
+
+            Assert.Contains(entries, entry => entry.Name == "another-test");
+            Assert.DoesNotContain(entries, entry => entry.Name == "test");
+        }
     }
 }
