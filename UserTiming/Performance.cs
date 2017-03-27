@@ -17,10 +17,10 @@ namespace UserTiming
 
         public override void Mark(string markName)
         {
-            var miliseconds = Stopwatch.GetTimestamp() * MilisecondsPerTick;
+            var entry = GetCurrentMark(markName);
             lock (entriesLock)
             {
-                entries = entries.Add(new PerformanceMark(markName, miliseconds));
+                entries = entries.Add(entry);
             }
         }
 
@@ -50,6 +50,19 @@ namespace UserTiming
             }
         }
 
+        public override void Measure(string measureName, string startMark)
+        {
+            var currentMark = GetCurrentMark(Guid.NewGuid().ToString());
+            lock (entries)
+            {
+                entries = entries.Add(new PerformanceMeasure(
+                    measureName,
+                    startMark,
+                    currentMark,
+                    entries));
+            }
+        }
+
         public override void Measure(string measureName, string startMark, string endMark)
         {
             lock (entries)
@@ -65,6 +78,12 @@ namespace UserTiming
         public override IEnumerable<IPerformanceEntry> GetEntriesByType(string entryType)
         {
             return entries.Where(entry => entry.EntryType == entryType);
+        }
+
+        private IPerformanceEntry GetCurrentMark(string markName)
+        {
+            var miliseconds = Stopwatch.GetTimestamp() * MilisecondsPerTick;
+            return new PerformanceMark(markName, miliseconds);
         }
     }
 }

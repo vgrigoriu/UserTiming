@@ -21,5 +21,20 @@ namespace UserTiming.Tests
             Assert.Equal("start-stop", measure.Name);
             Assert.True(measure.Duration > 0);
         }
+
+        [Fact]
+        public void CanAddMeasureBetweenNowAndAMark()
+        {
+            var sut = new Performance();
+            sut.Mark("start");
+            Thread.Sleep(0);
+
+            sut.Measure("start-stop", "start");
+
+            var measure = sut.GetEntriesByType(PerformanceEntryType.Measure).Single();
+
+            Assert.Equal("start-stop", measure.Name);
+            Assert.True(measure.Duration > 0);
+        }
     }
 }

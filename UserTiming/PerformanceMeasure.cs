@@ -25,6 +25,19 @@ namespace UserTiming
                     entry => string.Equals(endMarkName, entry.Name, StringComparison.Ordinal)));
         }
 
+        public PerformanceMeasure(
+            string measureName,
+            string startMarkName,
+            IPerformanceEntry endMark,
+            IEnumerable<IPerformanceEntry> entries)
+        {
+            Name = measureName;
+            startMark = new Lazy<IPerformanceEntry>(
+                () => entries.Last(
+                    entry => string.Equals(startMarkName, entry.Name, StringComparison.Ordinal)));
+            this.endMark = new Lazy<IPerformanceEntry>(() => endMark);
+        }
+
         public string Name { get; }
 
         public string EntryType => PerformanceEntryType.Measure;
