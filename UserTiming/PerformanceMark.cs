@@ -1,12 +1,18 @@
 ﻿namespace UserTiming
 {
-    internal abstract class PerformanceMark : IPerformanceMark
+    internal class PerformanceMark : IPerformanceMark
     {
-        public abstract string Name { get; }
+        internal PerformanceMark(string markName, double startTime)
+        {
+            Name = markName;
+            StartTime = startTime;
+        }
 
-        public string EntryType => "mark";
+        public string Name { get; }
 
-        public abstract double StartTime { get; }
+        public string EntryType => PerformanceEntryType.Mark;
+
+        public double StartTime { get; }
 
         public double Duration => 0;
     }
