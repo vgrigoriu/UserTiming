@@ -50,14 +50,21 @@ namespace UserTiming
             }
         }
 
+        public override void Measure(string measureName, string startMark, string endMark)
+        {
+            lock (entries)
+            {
+                entries = entries.Add(new PerformanceMeasure(
+                    measureName,
+                    startMark,
+                    endMark,
+                    entries));
+            }
+        }
+
         public override IEnumerable<IPerformanceEntry> GetEntriesByType(string entryType)
         {
             return entries.Where(entry => entry.EntryType == entryType);
         }
-    }
-
-    public static class PerformanceEntryType
-    {
-        public const string Mark = "mark";
     }
 }
